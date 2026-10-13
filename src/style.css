@@ -522,7 +522,8 @@ dialog.lightbox::backdrop { background: rgb(14 46 40 / 0.86); }
 
 /* ---------- Traiteur ---------- */
 .week { display: grid; gap: 0; grid-template-columns: 1fr; border-top: 1px solid var(--line); }
-@media (min-width: 900px) { .week { grid-template-columns: repeat(5, 1fr); border-top: 0; gap: 0; } }
+@media (min-width: 600px) and (max-width: 899px) { .week { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 1.4rem; } }
+@media (min-width: 900px) { .week { grid-template-columns: repeat(5, minmax(0, 1fr)); border-top: 0; gap: 0; } }
 .week-day { padding: 1.2rem 1rem 1.4rem; border-bottom: 1px solid var(--line); }
 @media (min-width: 900px) { .week-day { border: 1px solid var(--line); margin-left: -1px; } }
 .week-day h3 { font-size: 1.4rem; margin-bottom: 0.8rem; }
@@ -537,7 +538,8 @@ dialog.lightbox::backdrop { background: rgb(14 46 40 / 0.86); }
 .dish .p { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
 .dish p { grid-column: 1 / -1; margin: 0; color: var(--muted); font-size: 0.95rem; }
 .fete { display: grid; gap: 0.4rem 2rem; padding-block: 1.4rem; border-top: 1px solid var(--line); }
-@media (min-width: 760px) { .fete { grid-template-columns: 220px 1fr 220px; align-items: baseline; } }
+@media (min-width: 760px) { .fete { grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: baseline; } .fete .ex { grid-column: 1 / -1; } }
+@media (min-width: 1100px) { .fete { grid-template-columns: 220px minmax(0, 1fr) 220px; } .fete .ex { grid-column: auto; } }
 .fete h3 { font-size: 1.6rem; }
 .fete .ex { font-family: var(--f-mono); font-size: 0.8rem; color: var(--muted); }
 .badge-ex { display: inline-block; font-family: var(--f-mono); font-size: 0.7rem; border: 1px solid currentColor; padding: 0 0.4rem; margin-left: 0.4rem; text-transform: uppercase; letter-spacing: 0.06em; vertical-align: middle; }
@@ -610,3 +612,52 @@ dialog.lightbox::backdrop { background: rgb(14 46 40 / 0.86); }
 .post-row .thumb.thumb-photo { padding: 0; }
 .post-row .thumb.thumb-photo img { width: 100%; height: 100%; object-fit: cover; }
 .article-cover.photo-fig img { aspect-ratio: 16 / 9; height: auto; }
+
+/* ---------- Photos ajoutées (passe médias) ---------- */
+.photo-slim { display: grid; gap: 0.8rem; grid-template-columns: 1fr; padding-block: 0.6rem; }
+@media (min-width: 640px) { .photo-slim { grid-template-columns: 1fr 1fr; } }
+.photo-slim .photo-fig > img { aspect-ratio: 21 / 8; }
+@media (max-width: 639px) { .photo-slim .photo-fig:nth-child(n + 2) { display: none; } .photo-slim .photo-fig > img { aspect-ratio: 16 / 7; } }
+.dish.has-photo { grid-template-columns: 76px minmax(0, 1fr) auto; }
+.dish.has-photo .dish-photo { grid-row: 1 / span 2; margin: 0; width: 76px; }
+.dish.has-photo .dish-photo img { width: 76px; height: 76px; aspect-ratio: 1; object-fit: cover; }
+.dish.has-photo p { grid-column: 2 / -1; }
+.vitrine-wall { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 160px), 1fr)); gap: 0.8rem; }
+@media (max-width: 420px) { .vitrine-wall { grid-template-columns: 1fr 1fr; } }
+.vitrine-wall .slate-photo img { aspect-ratio: 4 / 3; }
+.team-photo { margin: 0 0 1rem; }
+.team-photo > img { aspect-ratio: 16 / 10 !important; }
+
+/* ---------- Téléphones et tablettes ---------- */
+h1, h2, h3, p, li, dd, dt, a, figcaption, blockquote { overflow-wrap: break-word; }
+h1, .plate h1 { hyphens: auto; -webkit-hyphens: auto; }
+.plate h1, .prose h1 { font-size: clamp(2.1rem, 6.4vw + 0.2rem, 5.6rem); }
+@media (max-width: 380px) { .hero h1 { font-size: clamp(2.5rem, 13vw, 2.9rem); } }
+[id] { scroll-margin-top: calc(var(--header-h) + 16px); }
+img { height: auto; }
+.slate .tags span { font-size: 0.78rem; }
+.my-list li button { min-height: 44px; padding-inline: 0.4rem; }
+.map-pt::after { content: ''; position: absolute; inset: -9px; border-radius: 50%; }
+.origin-list button { min-height: 48px; }
+.crumbs a { display: inline-block; padding-block: 0.6rem; }
+.site-footer a { display: inline-block; padding-block: 0.25rem; min-height: 32px; }
+@media (max-width: 999px) { .advice { position: static; } }
+@media (max-width: 899px) {
+  .toast, .skip { scroll-margin-bottom: calc(70px + env(safe-area-inset-bottom)); }
+  .pin-grid { padding-block: 3rem; }
+  .cave-stage .counter { font-size: clamp(3rem, 16vw, 5.5rem); }
+  .hero-art { max-width: min(100%, 420px); margin-inline: auto; width: 100%; }
+}
+/* Défilement horizontal des avis: aimantation + indication de glisser sur écran tactile */
+.swipe-hint { display: none; font-family: var(--f-mono); font-size: 0.82rem; color: var(--muted); margin-top: 0.4rem; align-items: center; gap: 0.5rem; }
+.swipe-hint::after { content: '\2192'; display: inline-block; }
+@media (hover: none), (max-width: 899px) { .swipe-hint { display: inline-flex; } }
+@media (hover: none) and (prefers-reduced-motion: no-preference) { .swipe-hint::after { animation: nudge 1.6s var(--ease-out) infinite; } }
+@keyframes nudge { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(6px); } }
+.quotes { scroll-padding-inline: var(--gutter); }
+/* Filtres SVG lourds (turbulence) coupés sur mobile et tablette */
+@media (max-width: 899px), (pointer: coarse) {
+  .carcass .reg.is-on { filter: none; }
+  .cave-stage .meat { filter: none; }
+}
+.marquee.is-paused .marquee-track { animation-play-state: paused; }

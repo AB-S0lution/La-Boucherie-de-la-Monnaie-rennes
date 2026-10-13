@@ -52,6 +52,7 @@ async function boot() {
     initHeaderHide()
     initCurtain((url) => { location.href = url })
     refreshLater()
+    document.documentElement.classList.add('motion-ready')
     if (location.hash) requestAnimationFrame(() => $(location.hash)?.scrollIntoView({ behavior: reduceMotion() ? 'auto' : 'smooth' }))
   } catch (err) {
     console.error(err)

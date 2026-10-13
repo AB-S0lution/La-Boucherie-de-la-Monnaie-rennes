@@ -114,7 +114,7 @@ export function billot(): string {
 }
 
 /** Carcasses: silhouette et régions du schéma (viewBox 800 × 420) */
-export const BODY = 'M118 130 C158 92 262 92 400 100 C520 106 626 100 692 140 C724 172 722 262 700 312 L692 392 L652 392 L642 330 C560 346 470 336 420 338 L412 394 L372 394 L362 332 C300 336 244 322 218 302 L208 392 L166 392 L160 302 C128 270 104 200 118 130Z'
+export const BODY = 'M70 196 C66 176 78 150 100 136 C110 118 126 108 140 110 C164 104 186 98 214 96 C300 88 420 96 520 100 C600 102 660 104 694 124 C716 138 724 168 720 206 C716 250 706 286 694 312 C688 340 690 372 696 404 L666 404 C664 380 658 356 648 336 C600 348 520 352 440 350 C360 350 290 346 222 332 C216 356 214 382 214 404 L180 404 C180 380 178 356 172 330 C162 300 156 270 152 246 C146 232 136 226 122 226 C106 228 92 222 80 214 C72 208 70 202 70 196Z'
 
 type Reg = { id: string; pts: number[] }
 export const REGIONS: Record<'boeuf' | 'cochon' | 'agneau', Reg[]> = {
@@ -174,10 +174,16 @@ export function carcass(species: 'boeuf' | 'cochon' | 'agneau'): string {
   <path d="${BODY}" fill="url(#${ID.hatch})" color="currentColor" opacity="0.8"/>
   <g clip-path="url(#cp-${species})">${polys}</g>
   <path class="body-line" d="${BODY}" fill="none" stroke="currentColor" stroke-width="2.4"/>
-  <g fill="none" stroke="currentColor" stroke-width="0.9" opacity="0.7">
-    <path d="M118 130 C96 120 86 142 92 158 C98 172 110 176 120 170"/>
-    <path d="M680 140 C700 128 722 138 712 160"/>
-    <circle cx="106" cy="148" r="2.4" fill="currentColor"/>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M132 112 C138 96 154 92 162 102 C154 110 144 114 132 112Z" stroke-width="1.6" fill="url(#${ID.hatch})"/>
+    ${species === 'boeuf' ? '<path d="M146 106 C150 90 162 82 176 84" stroke-width="2.2"/>' : ''}
+    <path d="M74 190 C78 187 83 188 86 192" stroke-width="1.2" opacity="0.8"/>
+    <path d="M96 210 C104 214 114 214 122 210" stroke-width="0.9" opacity="0.6"/>
+    <path d="M718 150 C736 184 738 240 732 294" stroke-width="2"/>
+    <path d="M732 294 C724 302 724 314 730 322 M732 294 C740 302 742 314 736 322" stroke-width="1.6"/>
+    <path d="M180 394 L214 394 M666 394 L696 394" stroke-width="2.4"/>
+    <path d="M232 300 C300 324 380 330 440 330 C520 330 590 324 640 312" stroke-width="0.8" opacity="0.45" stroke-dasharray="3 5"/>
+    <circle cx="104" cy="154" r="2.6" fill="currentColor" stroke="none"/>
   </g>
   </g>`, 'carcass carcass-' + species)
 }

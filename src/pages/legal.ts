@@ -1,5 +1,6 @@
 // Mentions légales (données de la SARL, PLAN.md §1).
 import { ADDRESS_LINE, BUSINESS, PHONE_PRIMARY } from '../data/business.ts'
+import { photoBand } from '../components/common.ts'
 import type { PageDef } from '../pages.ts'
 
 export function render(_def: PageDef): string {
@@ -9,5 +10,7 @@ export function render(_def: PageDef): string {
   <h2>Site de démonstration</h2><p>Ce site est une démonstration non officielle. Les prix, plats, articles, photos et listes de produits sont des exemples. Il ne permet aucune commande ni aucun paiement.</p>
   <h2>Hébergement</h2><p>GitHub Pages (GitHub, Inc.). <!-- TODO remplacer par l'hébergeur définitif --></p>
   <h2>Propriété intellectuelle</h2><p>Les gravures et illustrations sont des créations originales pour ce site. Le logo officiel de la maison n'est pas reproduit.</p>
-  <h2>Avis cités</h2><p>Les extraits d'avis sont issus d'avis publics de la plateforme Google et cités avec leur source.</p></section>`
+  <h2>Avis cités</h2><p>Les extraits d'avis sont issus d'avis publics de la plateforme Google et cités avec leur source.</p></section>
+  ${photoBand(['couperet', 'tranches-crues'])}
+  <div style="height:clamp(48px,7vw,100px)"></div>`
 }

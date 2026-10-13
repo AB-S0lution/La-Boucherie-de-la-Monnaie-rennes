@@ -1,6 +1,6 @@
 // Composants partagés: ticket d'horaires, pastilles, citations, pique-prix, en-tête de planche, bandeau d'appel.
 import { BUSINESS, HOURS, PHONE_PRIMARY, PHONE_TEL, ADDRESS_LINE, fmtTime, openStatus } from '../data/business.ts'
-import { photoImg, speciesPhoto } from '../data/photos.ts'
+import { photo, photoImg, speciesPhoto } from '../data/photos.ts'
 import { PRODUCTS, PRICE_NOTE, unitLabel, type Product } from '../data/products.ts'
 import { REVIEWS } from '../data/reviews.ts'
 import { coinSeal, ICON } from '../lib/art.ts'
@@ -77,4 +77,14 @@ export function callBand(text = 'Une question, une commande, une envie de côte 
       <div style="display:flex;flex-wrap:wrap;gap:.8rem"><a class="btn" href="tel:${PHONE_TEL}">${ICON.phone}<span>Appeler le ${PHONE_PRIMARY}</span></a><a class="btn btn-ghost" href="${href('contact/')}">Horaires et accès</a></div>
     </div>
   </section>`
+}
+
+/** Bandeau de photos d'illustration (2 colonnes sur téléphone, 4 au-delà de 900 px) */
+export function photoStrip(slugs: string[], label = 'En images'): string {
+  return `<section class="section-tight wrap" aria-label="${label}"><div class="photo-strip">${slugs.map((s, i) => `<figure class="photo-fig" data-reveal style="--i:${i}">${photoImg(photo(s))}<figcaption>Photo d'illustration</figcaption></figure>`).join('')}</div></section>`
+}
+
+/** Bande photo fine (pages FAQ, légales): une ou deux images panoramiques */
+export function photoBand(slugs: string[], label = 'Ambiance'): string {
+  return `<section class="wrap photo-slim" aria-label="${label}">${slugs.map((s, i) => `<figure class="photo-fig" data-reveal="mask" style="--i:${i}">${photoImg(photo(s))}<figcaption>Photo d'illustration</figcaption></figure>`).join('')}</section>`
 }

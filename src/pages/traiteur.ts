@@ -9,7 +9,10 @@ import { callBand, plateHead } from '../components/common.ts'
 import type { PageDef } from '../pages.ts'
 
 const name = (id: string) => DISHES.find((d) => d.id === id)?.name ?? id
-const dish = (d: Dish) => `<article class="dish" data-reveal><h3>${esc(d.name)}${d.cited ? '' : '<span class="badge-ex">exemple</span>'}</h3><span class="p">${money(d.price)}</span><p>${esc(d.desc)}</p></article>`
+const KIND_PHOTOS: Record<string, string[]> = { 'entrée': ['charcuterie-pain', 'planche-charcuterie', 'bocal-conserve'], plat: ['plat-mijote', 'bol-mijote', 'roti-tranche', 'roti-planche', 'tranchage-roti'], dessert: ['bocal-conserve'], sandwich: ['charcuterie-pain', 'saucisses-moutarde'] }
+const hashId = (s: string) => [...s].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7)
+const dishPhoto = (d: Dish) => { const l = KIND_PHOTOS[d.kind]; return l && d.kind !== 'dessert' ? `<figure class="dish-photo">${photoImg({ ...photo(l[hashId(d.id) % l.length]), alt: '' })}</figure>` : '' }
+const dish = (d: Dish) => `<article class="dish${KIND_PHOTOS[d.kind] && d.kind !== 'dessert' ? ' has-photo' : ''}" data-reveal>${dishPhoto(d)}<h3>${esc(d.name)}${d.cited ? '' : '<span class="badge-ex">exemple</span>'}</h3><span class="p">${money(d.price)}</span><p>${esc(d.desc)}</p></article>`
 
 export function render(_def: PageDef): string {
   const group = (k: Dish['kind'], t: string) => `<div><h3 class="mono note" style="margin-bottom:.4rem">${t}</h3>${DISHES.filter((d) => d.kind === k).map(dish).join('')}</div>`

@@ -4,7 +4,7 @@ import { franceMap, artFor } from '../lib/art.ts'
 import { $, $$, esc } from '../lib/dom.ts'
 import { gsap } from '../lib/motion.ts'
 import { reduceMotion } from '../lib/dom.ts'
-import { callBand, plateHead } from '../components/common.ts'
+import { callBand, photoStrip, plateHead } from '../components/common.ts'
 import type { PageDef } from '../pages.ts'
 
 export function render(_def: PageDef): string {
@@ -13,6 +13,7 @@ export function render(_def: PageDef): string {
     <div class="map-wrap" data-map>${franceMap()}${ORIGINS.map((o, i) => `<button class="map-pt" type="button" style="left:${(o.x / 600) * 100}%;top:${(o.y / 640) * 100}%" data-o="${o.id}" aria-pressed="${i === 0}" aria-label="${esc(o.name)}">${i + 1}</button>`).join('')}</div>
     <div><ul class="origin-list">${ORIGINS.map((o, i) => `<li><button type="button" data-o="${o.id}" aria-pressed="${i === 0}"><span>${i + 1}. ${esc(o.name)}</span><span class="br">${esc(o.breed)}</span></button></li>`).join('')}</ul>
       <div class="origin-detail" data-detail aria-live="polite" style="margin-top:1.4rem"></div></div></section>
+  ${photoStrip(['grosse-piece-planche', 'piece-legumes', 'tranchage-roti', 'assortiment-cru'], 'Les viandes en images')}
   <section class="section band-green" aria-labelledby="lab"><div class="wrap"><h2 id="lab" data-split>Les labels, expliqués</h2>
     <div class="values" style="margin-top:2rem">${LABELS_EXPLAINED.map((l) => `<div data-reveal><h3>${esc(l.code)}</h3><p class="mono note">${esc(l.title)}</p><p>${esc(l.text)}</p></div>`).join('')}</div></div></section>
   <section class="section wrap prose"><h2 data-split>Notre approche</h2><p>Nous achetons directement auprès d'éleveurs, en privilégiant les élevages responsables et les circuits courts. Nous ne publions pas de noms de fermes sans leur accord: seules les régions et les races sont indiquées.</p>

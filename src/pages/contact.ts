@@ -2,7 +2,7 @@
 import { ACCESS, ADDRESS_LINE, BUSINESS, PHONE_PRIMARY, PHONE_TEL } from '../data/business.ts'
 import { artFor, ICON } from '../lib/art.ts'
 import { $, esc, typo } from '../lib/dom.ts'
-import { hoursTicket, plateHead } from '../components/common.ts'
+import { hoursTicket, photoStrip, plateHead } from '../components/common.ts'
 import type { PageDef } from '../pages.ts'
 
 export function render(_def: PageDef): string {
@@ -16,6 +16,7 @@ export function render(_def: PageDef): string {
       <div style="display:flex;flex-wrap:wrap;gap:.8rem;margin-top:1.4rem"><a class="btn" href="tel:${PHONE_TEL}">${ICON.phone}<span>Appeler</span></a><a class="btn btn-ghost" href="${BUSINESS.mapsUrl}" target="_blank" rel="noopener">${ICON.pin}<span>Google Maps</span></a><a class="btn btn-ghost" href="${BUSINESS.osmUrl}" target="_blank" rel="noopener">OpenStreetMap</a></div></div>
     ${hoursTicket()}
   </section>
+  ${photoStrip(['vitrine-comptoir', 'vitrine-viandes', 'boucher-au-travail', 'vitrine-verre'], 'La boutique en images')}
   <section class="section band-green" aria-labelledby="dem"><div class="wrap cols-2" style="align-items:start"><div class="stack"><h2 id="dem" data-split>Préparer ma demande</h2><p class="lead">Ce formulaire n'envoie rien: il écrit votre demande, que vous copiez ou envoyez en message privé. Le boucher confirme la disponibilité et le prix.</p></div>
     <form class="form-grid" data-req novalidate>
       <div class="field"><label for="r-nom">Prénom</label><input id="r-nom" name="nom" type="text" autocomplete="given-name"></div>

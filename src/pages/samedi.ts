@@ -3,7 +3,7 @@ import { NEIGHBOURS, EVENTS } from '../data/content.ts'
 import { PRODUCTS } from '../data/products.ts'
 import { artFor } from '../lib/art.ts'
 import { esc } from '../lib/dom.ts'
-import { callBand, hoursTicket, plateHead, shelf, byIds } from '../components/common.ts'
+import { callBand, hoursTicket, photoStrip, plateHead, shelf, byIds } from '../components/common.ts'
 import type { PageDef } from '../pages.ts'
 
 export function render(_def: PageDef): string {
@@ -13,6 +13,7 @@ export function render(_def: PageDef): string {
   <section class="section wrap cols-2" style="align-items:start"><div class="stack"><h2 data-split>Le samedi, ça se passe ici</h2>
     <p class="lead">Les halles de fonte de la place des Lices, les étals, les voisins: la rue de la Monnaie est à deux pas.</p>
     <p>Venez en fin de matinée pour la côte de bœuf du dimanche, ou en milieu d'après-midi pour l'apéro: la boutique ne ferme pas à midi le samedi.</p></div>${hoursTicket({ compact: true })}</section>
+  ${photoStrip(['marche-etal', 'marche-carottes', 'planche-charcuterie', 'vitrine-comptoir'], 'Le samedi en images')}
   <section class="section band-green" aria-labelledby="ap"><div class="wrap"><h2 id="ap" data-split>L'apéro-marché</h2><p class="lead" style="margin-bottom:2rem">Quatre idées du samedi. Prix en exemple.</p>${shelf(apero)}</div></section>
   <section class="section wrap" aria-labelledby="ev"><h2 id="ev" data-split>Rendez-vous de la maison</h2>
     <div class="rows list-plain" style="margin-top:1.6rem">${EVENTS.map((e) => `<div data-reveal style="display:grid;gap:.2rem"><span class="mono note">${esc(e.when)}${e.example ? '<span class="badge-ex">exemple</span>' : ''}</span><h3>${esc(e.title)}</h3><p>${esc(e.text)}</p></div>`).join('')}</div></section>

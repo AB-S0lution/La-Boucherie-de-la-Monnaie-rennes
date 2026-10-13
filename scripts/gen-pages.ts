@@ -56,6 +56,7 @@ function page(p: PageDef): string {
         try { var t = localStorage.getItem('theme'); if (t) d.dataset.theme = t; else if (matchMedia('(prefers-color-scheme: dark)').matches) d.dataset.theme = 'dark'; } catch (e) {}
         if (!matchMedia('(prefers-reduced-motion: reduce)').matches) d.classList.add('js-motion');
         try { if (sessionStorage.getItem('curtain') && !matchMedia('(prefers-reduced-motion: reduce)').matches) d.classList.add('curtain-in'); } catch (e) {}
+        setTimeout(function () { if (!d.classList.contains('motion-ready')) d.classList.remove('js-motion', 'curtain-in'); }, 4000);
       })();
     </script>${ld}
   </head>

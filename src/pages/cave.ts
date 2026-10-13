@@ -1,6 +1,6 @@
 // La cave de maturation: récit, faits, races, cuisson d'une viande maturée, mur de vitrines.
 import { COOK_MATURED, MATURATION, MATURATION_FACTS, VITRINE } from '../data/cave.ts'
-import { photo, photoImg } from '../data/photos.ts'
+import { photo, photoImg, speciesPhoto } from '../data/photos.ts'
 import { PRODUCTS } from '../data/products.ts'
 import { artFor, cote } from '../lib/art.ts'
 import { esc, href, money } from '../lib/dom.ts'
@@ -23,7 +23,7 @@ export function render(_def: PageDef): string {
     ${shelf(mature)}</section>
   <section class="section wrap" aria-labelledby="mur"><h2 id="mur" data-split>Le mur de vitrines</h2>
     <p class="lead" style="margin-bottom:1.6rem">Une grille de vitrines pour montrer les pièces à la vue de tous. Les noms sont réels, la présentation est un exemple.</p>
-    <ul class="list-plain" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.8rem">${VITRINE.map((v) => { const p = PRODUCTS.find((x) => x.id === v.productId); return p ? `<li class="slate" style="min-height:0"><h3 style="font-size:1.05rem">${esc(p.name)}</h3><div class="price">${money(p.price)}</div></li>` : '' }).join('')}</ul></section>
+    <ul class="list-plain vitrine-wall">${VITRINE.map((v) => { const p = PRODUCTS.find((x) => x.id === v.productId); return p ? `<li class="slate" style="min-height:0"><figure class="slate-photo">${photoImg({ ...speciesPhoto(p.species, p.id), alt: '' })}</figure><h3 style="font-size:1.05rem">${esc(p.name)}</h3><div class="price">${money(p.price)}</div></li>` : '' }).join('')}</ul></section>
   <section class="section wrap cols-2 cols-5-7" aria-labelledby="cuire" style="align-items:start"><div class="stack"><h2 id="cuire" data-split>Cuire une viande maturée</h2><p class="lead">Quatre gestes, pas un de plus.</p></div>
     <ol class="rows list-plain">${COOK_MATURED.map((c, i) => `<li data-reveal><span class="mono note">${i + 1}</span><h3>${esc(c.step)}</h3><p>${esc(c.text)}</p></li>`).join('')}</ol></section>
   <p class="wrap" style="padding-block:1rem 3rem"><a class="link-arrow" href="${href('carcasse/')}">Choisir mon morceau</a></p>

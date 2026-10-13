@@ -112,7 +112,7 @@ export function render(_def: PageDef): string {
   <section class="section wrap" aria-labelledby="ch5">
     <div class="chapter-head"><h2 id="ch5" data-split>Le comptoir, la cuisine, l'épicerie</h2><p class="lead">Les signatures de la maison. ${PRICE_NOTE}</p></div>
     <ul class="shelf" style="margin-top:2.4rem">${sig.map((p) => piquePrix(p)).join('')}
-      <li class="slate"><h3>${esc(bouchee.name)}</h3><p class="desc">${esc(bouchee.desc)}</p><div class="price">${money(bouchee.price)} <small>/ portion</small></div><div class="tags"><span>traiteur</span><span>fêtes</span><span>fait maison</span></div><span class="slice" aria-hidden="true"></span></li></ul>
+      <li class="slate"><figure class="slate-photo">${photoImg(photo('bol-mijote'))}<figcaption>Photo d'illustration</figcaption></figure><h3>${esc(bouchee.name)}</h3><p class="desc">${esc(bouchee.desc)}</p><div class="price">${money(bouchee.price)} <small>/ portion</small></div><div class="tags"><span>traiteur</span><span>fêtes</span><span>fait maison</span></div><span class="slice" aria-hidden="true"></span></li></ul>
     <div class="counter-top" aria-hidden="true"></div><div class="marble" aria-hidden="true"></div>
     <p style="margin-top:2rem"><a class="btn" href="${href('comptoir/')}">Voir tout le comptoir ${ICON.arrow}</a></p>
   </section>
@@ -129,6 +129,7 @@ export function render(_def: PageDef): string {
       <div style="display:flex;justify-content:space-between;align-items:end;gap:1rem;flex-wrap:wrap;margin-bottom:2rem"><h2 id="avis" data-split>Ce que disent les clients</h2>
         <div class="quotes-nav"><button type="button" data-q-prev aria-label="Avis précédent">${ICON.arrow.replace('<svg', '<svg style="transform:rotate(180deg)"')}</button><button type="button" data-q-next aria-label="Avis suivant">${ICON.arrow}</button></div></div>
       <div class="quotes" data-quotes tabindex="0" aria-label="Avis Google, défilement horizontal">${quoteCards(HOME_REVIEW_IDS)}</div>
+      <p class="swipe-hint" aria-hidden="true">Glissez pour lire les avis</p>
       <p class="note" style="margin-top:1rem">Extraits d'avis publics ${BUSINESS.rating}. Orthographe d'origine.</p>
     </div>
   </section>
@@ -235,8 +236,8 @@ export function init(root: HTMLElement) {
   gsap.set(regs, { strokeDasharray: 1, strokeDashoffset: 1, fill: 'rgba(155,36,48,0)' })
   const counter = $('[data-count]', ch2)!
   const pinOpts = (end: string) => ({ trigger: ch2, start: 'top top', end, pin: true, scrub: 0.8, anticipatePin: 1 })
-  const buildCarcass = (end: string) => {
-    const t = gsap.timeline({ scrollTrigger: pinOpts(end) })
+  const buildCarcass = (end: string, st?: ScrollTrigger.Vars) => {
+    const t = gsap.timeline({ scrollTrigger: st ?? pinOpts(end) })
     t.to(bodyLine, { strokeDashoffset: 0, duration: 0.6 })
     regs.forEach((r, i) => {
       t.to(r, { strokeDashoffset: 0, duration: 0.25 }, 0.5 + i * 0.12)
@@ -246,7 +247,9 @@ export function init(root: HTMLElement) {
     t.to({}, { duration: 0.4 })
   }
   mm.add('(min-width: 900px)', () => buildCarcass('+=220%'))
-  mm.add('(max-width: 899px)', () => buildCarcass('+=170%'))
+  // Téléphones et tablettes portrait: pas d'épinglage (fragile au toucher, contenu plus haut que l'écran),
+  // la carcasse se dessine au fil du défilement de la section
+  mm.add('(max-width: 899px)', () => buildCarcass('', { trigger: $('[data-carc]', ch2)!, start: 'top 85%', end: 'bottom 45%', scrub: 0.6 }))
 
   // ---- Chapitre 3: la cave, de J0 à J56 (couleur de la viande, croûte, compteur)
   const ch3 = $('[data-ch3]', root)!
@@ -261,21 +264,27 @@ export function init(root: HTMLElement) {
   const rail = $('[data-rail]', ch3)!
   const obj = { d: 0 }
   gsap.set(steak, { attr: { fill: colors[0] } })
-  const caveTL = (end: string) => {
-    const t = gsap.timeline({ scrollTrigger: { trigger: ch3, start: 'top top', end, pin: true, scrub: 0.9, anticipatePin: 1 }, defaults: { ease: 'none' } })
+  const caveTL = (st: ScrollTrigger.Vars) => {
+    const t = gsap.timeline({ scrollTrigger: st, defaults: { ease: 'none' } })
     const seg = 1 / (steps.length - 1)
+    const setDay = () => { dayEl.textContent = String(Math.round(obj.d)) }
+    obj.d = days[0]; setDay()
     t.to(rail, { scaleX: 1, duration: 1 }, 0)
-    t.to(obj, { d: days[days.length - 1], duration: 1, onUpdate: () => { dayEl.textContent = String(Math.round(obj.d)) } }, 0)
     t.to(crust, { opacity: 1, duration: 1 }, 0)
+    // Compteur synchronisé étape par étape: chaque segment va du jour de l'étape i-1 au jour de l'étape i,
+    // et le texte de l'étape i apparaît exactement quand le compteur atteint son jour (et la graduation du rail)
     for (let i = 1; i < steps.length; i++) {
-      t.to(steak, { attr: { fill: colors[i] }, duration: seg }, (i - 1) * seg)
-      t.to(steps[i - 1], { opacity: 0, duration: 0.08 }, i * seg - 0.08)
-      t.to(steps[i], { opacity: 1, duration: 0.08 }, i * seg - 0.04)
+      const at = (i - 1) * seg
+      t.fromTo(obj, { d: days[i - 1] }, { d: days[i], duration: seg, immediateRender: false, onUpdate: setDay }, at)
+      t.to(steak, { attr: { fill: colors[i] }, duration: seg }, at)
+      t.to(steps[i - 1], { opacity: 0, duration: 0.06 }, i * seg - 0.06)
+      t.to(steps[i], { opacity: 1, duration: 0.06 }, i * seg - 0.03)
     }
     t.to({}, { duration: 0.15 })
   }
-  mm.add('(min-width: 900px)', () => caveTL('+=300%'))
-  mm.add('(max-width: 899px)', () => caveTL('+=220%'))
+  mm.add('(min-width: 900px)', () => caveTL({ trigger: ch3, start: 'top top', end: '+=300%', pin: true, scrub: 0.9, anticipatePin: 1 }))
+  // Téléphones et tablettes portrait: la section n'est pas épinglée (plus haute que l'écran), le temps défile avec elle
+  mm.add('(max-width: 899px)', () => caveTL({ trigger: $('.cave-live', ch3)!, start: 'top 75%', end: () => `+=${Math.round(window.innerHeight * 0.9)}`, scrub: 0.5 }))
 
   // Ticket qui s'imprime: géré globalement dans initReveals (lib/motion.ts)
   ScrollTrigger.refresh()

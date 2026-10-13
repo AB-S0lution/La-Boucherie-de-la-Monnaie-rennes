@@ -53,6 +53,12 @@ export const PHOTOS: Photo[] = [
   p('bol-mijote', '1445979323117-80453f573b71', "Viande mijotée en sauce dans une cocotte en fonte", 1400, 930),
   p('couteaux-bois', '1704895291242-1e6f3e761c6b', "Deux couteaux de cuisine posés sur un fond sombre", 1400, 1867),
   p('couperet', '1548691597-8c8944ff28b2', "Lame de couteau de chef en noir et blanc", 1400, 935),
+  p('huile-carafe', '1474979266404-7eaacbcd87c5', "Carafe d'huile d'olive en verre", 1200, 1665),
+  p('huile-verseuse', '1552592074-ea7a91b851b3', "Bouteille d'huile avec un bec verseur en inox", 1200, 1500),
+  p('bocal-conserve', '1617854307432-13950e24ba07', "Bocal de conserve en verre posé sur une table en bois", 1200, 1500),
+  p('bocal-ail', '1627861446476-42fd9925e151', "Ail et légumes au vinaigre dans un bocal en verre", 1200, 772),
+  p('marche-etal', '1591586116988-62fe65164f8d', "Étal de marché: poireaux, betteraves, chou-fleur et brocoli", 1200, 981),
+  p('marche-carottes', '1687199129802-3e4cc27baac0', "Bottes de carottes et légumes de saison sur une table de marché", 1200, 1800),
   p('couteau-planche', '1611605377578-594f5bcf3e97', "Couperet à manche en bois sur un fond sombre", 900, 1350),
 ]
 

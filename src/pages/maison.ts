@@ -32,8 +32,8 @@ export function render(_def: PageDef): string {
       <div data-reveal><h3>La transparence</h3><p>Vous voyez le travail, vous posez vos questions, le boucher vous répond. Les races et les régions d'origine sont indiquées.</p></div>
     </div></section>
   <section class="section wrap" aria-labelledby="eq"><h2 id="eq" data-split>L'équipe</h2>
-    <div class="values" style="margin-top:2rem">${TEAM.map((t) => `<div data-reveal><h3>${esc(t.name ?? t.role)}</h3>${t.name ? `<p class="mono note">${esc(t.role)}</p>` : ''}<p>${esc(t.text)}</p></div>`).join('')}</div>
-    <p class="note" style="margin-top:1rem">Les portraits arriveront avec les photos de la maison. <!-- TODO photos équipe, avec accord des personnes --></p></section>
+    <div class="values team-grid" style="margin-top:2rem">${TEAM.map((t, i) => `<div data-reveal><figure class="photo-fig team-photo">${photoImg(photo(['boucher-au-travail', 'decoupe-billot', 'plat-mijote', 'couteaux-bois'][i % 4]))}<figcaption>Photo d'illustration</figcaption></figure><h3>${esc(t.name ?? t.role)}</h3>${t.name ? `<p class="mono note">${esc(t.role)}</p>` : ''}<p>${esc(t.text)}</p></div>`).join('')}</div>
+    <p class="note" style="margin-top:1rem">Photos d'illustration en attendant les portraits de la maison. <!-- TODO photos équipe, avec accord des personnes --></p></section>
   <section class="section band-green" aria-labelledby="presse"><div class="wrap"><h2 id="presse" data-split>Dans la presse</h2>
     <div class="quotes" style="margin-top:2rem;overflow:visible;flex-wrap:wrap">${PRESS.map((p) => `<figure class="quote" data-reveal><blockquote>« ${esc(p.quote)} »</blockquote><figcaption>${esc(p.outlet)}, ${esc(p.date)}. <a href="${p.url}" target="_blank" rel="noopener">Lire l'article</a></figcaption></figure>`).join('')}</div></div></section>
   <section class="section wrap cols-2 cols-5-7" style="align-items:start"><div class="stack"><h2 data-split>Le lieu, du XVe siècle à aujourd'hui</h2><p class="lead">Là où l'on frappait la monnaie, on découpe aujourd'hui la côte de bœuf.</p></div>

@@ -7,13 +7,16 @@ import Lenis from 'lenis'
 import { $, $$, reduceMotion } from './dom.ts'
 
 gsap.registerPlugin(ScrollTrigger, SplitText)
+// Barre d'adresse mobile: pas de recalcul à chaque redimensionnement vertical
+ScrollTrigger.config({ ignoreMobileResize: true })
 export { gsap, ScrollTrigger, SplitText }
 
 let lenis: Lenis | null = null
 export const getLenis = () => lenis
 
 export function initSmoothScroll() {
-  if (reduceMotion()) return
+  // Écrans tactiles: défilement natif (Lenis ne lisse pas le toucher, inutile de faire tourner sa boucle)
+  if (reduceMotion() || window.matchMedia('(pointer: coarse)').matches) return
   lenis = new Lenis({ lerp: 0.1, smoothWheel: true, anchors: false })
   lenis.on('scroll', ScrollTrigger.update)
   gsap.ticker.add((t) => lenis?.raf(t * 1000))
@@ -26,10 +29,30 @@ export function initReveals(root: ParentNode = document) {
   const els = $$('[data-reveal]', root)
   if (!els.length) return
   if (reduceMotion() || !('IntersectionObserver' in window)) { els.forEach((e) => e.classList.add('is-in')); return }
+  let fired = false
   const io = new IntersectionObserver((entries) => {
+    fired = true
     for (const en of entries) if (en.isIntersecting) { (en.target as HTMLElement).classList.add('is-in'); io.unobserve(en.target) }
   }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 })
   els.forEach((e) => io.observe(e))
+  // Filet de sécurité: si l'observateur n'a rien signalé, tout s'affiche; sinon, rien de déjà passé ne reste caché
+  window.setTimeout(() => {
+    els.forEach((e) => {
+      if (e.classList.contains('is-in')) return
+      if (!fired || e.getBoundingClientRect().top < window.innerHeight) { e.classList.add('is-in'); io.unobserve(e) }
+    })
+  }, 2600)
+  initMarqueePause(root)
+}
+
+/** Bandeau défilant: en pause hors de l'écran (économie de batterie) */
+function initMarqueePause(root: ParentNode) {
+  const ms = $$('.marquee', root)
+  if (!ms.length || !('IntersectionObserver' in window)) return
+  const io = new IntersectionObserver((entries) => {
+    for (const en of entries) (en.target as HTMLElement).classList.toggle('is-paused', !en.isIntersecting)
+  })
+  ms.forEach((m) => io.observe(m))
 }
 
 /** Ticket d'horaires qui « s'imprime » (toutes les pages qui l'affichent: accueil, contact, samedi) */
@@ -74,13 +97,22 @@ export function revealLines(el: HTMLElement, opts: { delay?: number; scrub?: boo
 /** Titres de section: lignes en masque, déclenchées à l'entrée dans la fenêtre */
 export function initHeadings(root: ParentNode = document) {
   if (reduceMotion()) return
+  const tweens: Array<{ el: HTMLElement; tw: gsap.core.Tween }> = []
   $$('[data-split]', root).forEach((el) => {
     SplitText.create(el, {
       type: 'lines', mask: 'lines', autoSplit: true, aria: 'auto',
-      onSplit: (self) => gsap.from(self.lines, { yPercent: 105, duration: 0.9, ease: 'expo.out', stagger: 0.08,
-        scrollTrigger: { trigger: el, start: 'top 88%', once: true } }),
+      onSplit: (self) => {
+        const tw = gsap.from(self.lines, { yPercent: 105, duration: 0.9, ease: 'expo.out', stagger: 0.08,
+          scrollTrigger: { trigger: el, start: 'top 88%', once: true } })
+        tweens.push({ el, tw })
+        return tw
+      },
     })
   })
+  // Filet de sécurité: un titre déjà à l'écran (ou passé) ne reste jamais masqué
+  window.setTimeout(() => {
+    tweens.forEach(({ el, tw }) => { if (tw.progress() === 0 && el.getBoundingClientRect().top < window.innerHeight) tw.progress(1) })
+  }, 3000)
 }
 
 /** Barre d'en-tête qui se range au défilement vers le bas (ScrollTrigger, pas d'écouteur scroll) */

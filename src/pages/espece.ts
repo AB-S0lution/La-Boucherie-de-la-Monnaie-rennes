@@ -3,7 +3,8 @@ import { SPECIES_LABEL, type Species } from '../data/products.ts'
 import type { CarcassKey } from '../data/cuts.ts'
 import { artFor } from '../lib/art.ts'
 import { $, href } from '../lib/dom.ts'
-import { callBand, plateHead } from '../components/common.ts'
+import { callBand, photoStrip, plateHead } from '../components/common.ts'
+import { SPECIES_PHOTOS } from '../data/photos.ts'
 import { catalogueHTML, initCatalogue } from '../components/catalogue.ts'
 import { finderHTML, initFinder } from '../components/finder.ts'
 import type { PageDef } from '../pages.ts'
@@ -19,6 +20,7 @@ const META: Record<string, Meta> = {
 export function render(def: PageDef): string {
   const m = META[def.path]
   return `${plateHead({ title: def.title, lead: m.lead, art: artFor(m.art), crumbs: [['comptoir/', 'Le comptoir']], current: def.title })}
+  ${photoStrip(SPECIES_PHOTOS[m.species].slice(0, 4), `${def.title} en images`)}
   <section class="section-tight"><div class="wrap">${catalogueHTML(m.species)}</div></section>
   ${m.carcass ? `<section class="section wrap" aria-label="Morceaux"><h2 data-split>Sur la carcasse</h2><p class="lead" style="margin-bottom:2rem">${m.hint}</p>${finderHTML(m.carcass, false)}<p style="margin-top:1.4rem"><a class="link-arrow" href="${href('carcasse/')}">Préparer ma liste</a></p></section>` : ''}
   <section class="section-tight wrap"><p class="note">${SPECIES_LABEL[m.species]}: prix indicatifs. Le boucher confirme au comptoir.</p></section>
