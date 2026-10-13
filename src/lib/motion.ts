@@ -22,6 +22,7 @@ export function initSmoothScroll() {
 
 /** Apparition au défilement (IntersectionObserver), états initiaux posés par la classe js-motion */
 export function initReveals(root: ParentNode = document) {
+  initTicketPrint(root)
   const els = $$('[data-reveal]', root)
   if (!els.length) return
   if (reduceMotion() || !('IntersectionObserver' in window)) { els.forEach((e) => e.classList.add('is-in')); return }
@@ -29,6 +30,22 @@ export function initReveals(root: ParentNode = document) {
     for (const en of entries) if (en.isIntersecting) { (en.target as HTMLElement).classList.add('is-in'); io.unobserve(en.target) }
   }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 })
   els.forEach((e) => io.observe(e))
+}
+
+/** Ticket d'horaires qui « s'imprime » (toutes les pages qui l'affichent: accueil, contact, samedi) */
+function initTicketPrint(root: ParentNode) {
+  const tickets = $$('.ticket[data-print]', root)
+  if (!tickets.length) return
+  const show = (tk: HTMLElement) => gsap.set(tk, { clipPath: 'none' })
+  if (reduceMotion() || !('IntersectionObserver' in window)) { tickets.forEach(show); return }
+  const io = new IntersectionObserver((entries) => {
+    for (const en of entries) if (en.isIntersecting) {
+      const tk = en.target as HTMLElement
+      io.unobserve(tk)
+      gsap.to(tk, { clipPath: 'inset(0 0 0% 0)', duration: 1.1, ease: 'steps(14)', onComplete: () => show(tk) })
+    }
+  }, { rootMargin: '0px 0px -15% 0px', threshold: 0 })
+  tickets.forEach((tk) => io.observe(tk))
 }
 
 /** Attraction magnétique des boutons principaux (souris uniquement, 6 px max) */

@@ -277,10 +277,7 @@ export function init(root: HTMLElement) {
   mm.add('(min-width: 900px)', () => caveTL('+=300%'))
   mm.add('(max-width: 899px)', () => caveTL('+=220%'))
 
-  // ---- Ticket qui s'imprime
-  $$('.ticket[data-print]', root).forEach((tk) => {
-    gsap.to(tk, { clipPath: 'inset(0 0 0% 0)', duration: 1.1, ease: 'steps(14)', scrollTrigger: { trigger: tk, start: 'top 85%', once: true } })
-  })
+  // Ticket qui s'imprime: géré globalement dans initReveals (lib/motion.ts)
   ScrollTrigger.refresh()
 }
 
