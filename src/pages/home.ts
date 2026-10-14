@@ -262,25 +262,40 @@ export function init(root: HTMLElement) {
   const colors = MATURATION_STEPS.map((s) => s.color)
   const dayEl = $('[data-day]', ch3)!
   const rail = $('[data-rail]', ch3)!
-  const obj = { d: 0 }
   gsap.set(steak, { attr: { fill: colors[0] } })
   const caveTL = (st: ScrollTrigger.Vars) => {
-    const t = gsap.timeline({ scrollTrigger: st, defaults: { ease: 'none' } })
-    const seg = 1 / (steps.length - 1)
-    const setDay = () => { dayEl.textContent = String(Math.round(obj.d)) }
-    obj.d = days[0]; setDay()
-    t.to(rail, { scaleX: 1, duration: 1 }, 0)
+    // Compteur synchronisé avec l'étape affichée: chaque étape tient un palier (compteur figé sur son jour),
+    // puis une courte transition fait monter le compteur, avance le rail jusqu'à la graduation suivante
+    // et croise les textes. Le texte de l'étape i n'est jamais affiché avec un autre jour que le sien.
+    const n = steps.length
+    const hold = 0.62 / n
+    const move = (1 - hold * n) / (n - 1)
+    const startOf = (i: number) => i * hold + (i - 1) * move
+    // Le jour est calculé à partir du temps du timeline (et non d'un objet tweené): les rendus de refresh
+    // de ScrollTrigger suppriment les onUpdate des tweens, le compteur restait alors sur « 42 » avant la section
+    const dayAt = (time: number) => {
+      for (let i = 1; i < n; i++) {
+        const at = startOf(i)
+        if (time < at) return days[i - 1]
+        if (time < at + move) return days[i - 1] + ((days[i] - days[i - 1]) * (time - at)) / move
+      }
+      return days[n - 1]
+    }
+    const t = gsap.timeline({ paused: true, defaults: { ease: 'none' } })
+    const setDay = () => { dayEl.textContent = String(Math.round(dayAt(t.time()))) }
+    t.eventCallback('onUpdate', setDay)
+    setDay()
     t.to(crust, { opacity: 1, duration: 1 }, 0)
-    // Compteur synchronisé étape par étape: chaque segment va du jour de l'étape i-1 au jour de l'étape i,
-    // et le texte de l'étape i apparaît exactement quand le compteur atteint son jour (et la graduation du rail)
-    for (let i = 1; i < steps.length; i++) {
-      const at = (i - 1) * seg
-      t.fromTo(obj, { d: days[i - 1] }, { d: days[i], duration: seg, immediateRender: false, onUpdate: setDay }, at)
-      t.to(steak, { attr: { fill: colors[i] }, duration: seg }, at)
-      t.to(steps[i - 1], { opacity: 0, duration: 0.06 }, i * seg - 0.06)
-      t.to(steps[i], { opacity: 1, duration: 0.06 }, i * seg - 0.03)
+    gsap.set(rail, { scaleX: 0 })
+    for (let i = 1; i < n; i++) {
+      const at = startOf(i)
+      t.to(rail, { scaleX: i / (n - 1), duration: move }, at)
+      t.to(steak, { attr: { fill: colors[i] }, duration: move }, at)
+      t.to(steps[i - 1], { opacity: 0, duration: move * 0.45 }, at)
+      t.to(steps[i], { opacity: 1, duration: move * 0.45 }, at + move * 0.55)
     }
     t.to({}, { duration: 0.15 })
+    ScrollTrigger.create({ ...st, animation: t, onRefresh: setDay })
   }
   mm.add('(min-width: 900px)', () => caveTL({ trigger: ch3, start: 'top top', end: '+=300%', pin: true, scrub: 0.9, anticipatePin: 1 }))
   // Téléphones et tablettes portrait: la section n'est pas épinglée (plus haute que l'écran), le temps défile avec elle

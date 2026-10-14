@@ -35,13 +35,30 @@ export function initReveals(root: ParentNode = document) {
     for (const en of entries) if (en.isIntersecting) { (en.target as HTMLElement).classList.add('is-in'); io.unobserve(en.target) }
   }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 })
   els.forEach((e) => io.observe(e))
-  // Filet de sécurité: si l'observateur n'a rien signalé, tout s'affiche; sinon, rien de déjà passé ne reste caché
-  window.setTimeout(() => {
-    els.forEach((e) => {
-      if (e.classList.contains('is-in')) return
-      if (!fired || e.getBoundingClientRect().top < window.innerHeight) { e.classList.add('is-in'); io.unobserve(e) }
+  // Filet de sécurité: si l'observateur n'a rien signalé, tout s'affiche; sinon, rien de déjà passé ne reste caché.
+  // Rejoué à chaque arrêt du défilement: les derniers éléments en bas de page (qui n'atteignent jamais le seuil)
+  // et ceux insérés plus tard (filtres, listes) finissent toujours visibles.
+  const sweep = (all = false) => {
+    $$('[data-reveal]:not(.is-in)', root).forEach((e) => {
+      const top = e.getBoundingClientRect().top
+      if (all || top < window.innerHeight) { e.classList.add('is-in'); io.unobserve(e) }
     })
-  }, 2600)
+  }
+  window.setTimeout(() => sweep(!fired), 2600)
+  let idle = 0
+  ScrollTrigger.addEventListener('scrollEnd', () => { window.clearTimeout(idle); idle = window.setTimeout(() => sweep(), 400) })
+  if ('MutationObserver' in window && root instanceof Node) {
+    let late = 0
+    new MutationObserver((records) => {
+      // Seuls les ajouts d'éléments comptent (pas les compteurs qui réécrivent leur texte à chaque image)
+      if (!records.some((r) => [...r.addedNodes].some((n) => n instanceof Element))) return
+      window.clearTimeout(late)
+      late = window.setTimeout(() => {
+        $$('[data-reveal]:not(.is-in)', root).forEach((e) => io.observe(e))
+        sweep()
+      }, 600)
+    }).observe(root, { childList: true, subtree: true })
+  }
   initMarqueePause(root)
 }
 
